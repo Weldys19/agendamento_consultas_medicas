@@ -22,7 +22,7 @@ public class DoctorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuid;
+    private UUID id;
 
     private String name;
     private String specialty;

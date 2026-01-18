@@ -2,6 +2,7 @@ package br.com.weldyscarmo.agendamento_consultas_medicas.exceptions;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,5 +34,10 @@ public class ExceptionHandlerController {
     @ExceptionHandler(UserFoundException.class)
     public ResponseEntity<String> handlerUserFoundException(UserFoundException e){
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<String> handlerInvalidCredentialsException(InvalidCredentialsException e){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 }

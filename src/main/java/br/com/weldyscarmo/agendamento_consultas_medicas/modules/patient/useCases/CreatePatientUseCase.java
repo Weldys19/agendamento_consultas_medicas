@@ -20,6 +20,11 @@ public class CreatePatientUseCase {
 
     public CreatePatientResponseDTO execute(CreatePatientRequestDTO createPatientRequestDTO){
 
+        this.patientRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(createPatientRequestDTO.getUsername(),
+                createPatientRequestDTO.getEmail()).ifPresent(user -> {
+                    throw new UserFoundException();
+        });
+
         var hashPassword = passwordEncoder.encode(createPatientRequestDTO.getPassword());
 
         var patientEntity = PatientEntity.builder()
@@ -28,11 +33,6 @@ public class CreatePatientUseCase {
                 .username(createPatientRequestDTO.getUsername())
                 .password(hashPassword)
                 .build();
-
-        this.patientRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(patientEntity.getUsername(),
-                patientEntity.getEmail()).ifPresent(user -> {
-                    throw new UserFoundException();
-        });
 
         var savedPatient = this.patientRepository.save(patientEntity);
 

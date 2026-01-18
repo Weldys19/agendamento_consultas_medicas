@@ -1,11 +1,9 @@
-package br.com.weldyscarmo.agendamento_consultas_medicas.user.useCases;
+package br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.useCases;
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserFoundException;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.CreatePatientRequestDTO;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.CreatePatientResponseDTO;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.useCases.CreatePatientUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +17,7 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,9 +56,8 @@ public class CreatePatientUseCaseTest {
 
         var result = this.createPatientUseCase.execute(patient);
 
-        assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(patientIdGenerate.getId());
-        assertThat(result).isInstanceOf(CreatePatientResponseDTO.class);
+        verify(passwordEncoder).encode(any(String.class));
     }
 
     @Test

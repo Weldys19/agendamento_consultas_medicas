@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateDoctorResponseDTO {
 
-    private UUID uuid;
+    private UUID id;
     private String name;
     private String specialty;
     private String email;

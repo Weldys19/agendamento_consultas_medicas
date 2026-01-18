@@ -35,7 +35,7 @@ public class CreateDoctorUseCase {
         var savedDoctor = this.doctorRepository.save(doctorEntity);
 
         return CreateDoctorResponseDTO.builder()
-                .uuid(savedDoctor.getUuid())
+                .id(savedDoctor.getId())
                 .name(savedDoctor.getName())
                 .email(savedDoctor.getEmail())
                 .specialty(savedDoctor.getSpecialty())

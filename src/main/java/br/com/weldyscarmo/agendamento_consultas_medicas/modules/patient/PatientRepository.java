@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface PatientRepository extends JpaRepository<PatientEntity, UUID> {
     Optional<PatientEntity> findByUsernameIgnoreCaseOrEmailIgnoreCase(String username, String email);
+    Optional<PatientEntity> findByEmailIgnoreCase(String email);
 }
