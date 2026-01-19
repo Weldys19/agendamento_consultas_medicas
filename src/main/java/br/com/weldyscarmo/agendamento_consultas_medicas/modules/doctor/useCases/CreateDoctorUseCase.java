@@ -5,6 +5,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEnt
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorResponseDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,18 @@ public class CreateDoctorUseCase {
     private DoctorRepository doctorRepository;
 
     @Autowired
+    private PatientRepository patientRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public CreateDoctorResponseDTO execute(CreateDoctorRequestDTO createDoctorRequestDTO){
         this.doctorRepository.findByEmailIgnoreCase(createDoctorRequestDTO.getEmail()).ifPresent(user -> {
                     throw new UserFoundException();
+        });
+
+        this.patientRepository.findByEmailIgnoreCase(createDoctorRequestDTO.getEmail()).ifPresent(user -> {
+            throw new UserFoundException();
         });
 
         var hashPassword = passwordEncoder.encode(createDoctorRequestDTO.getPassword());

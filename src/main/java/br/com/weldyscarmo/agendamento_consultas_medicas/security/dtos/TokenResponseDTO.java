@@ -1,4 +1,4 @@
-package br.com.weldyscarmo.agendamento_consultas_medicas.security;
+package br.com.weldyscarmo.agendamento_consultas_medicas.security.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

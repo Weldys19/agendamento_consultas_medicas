@@ -1,6 +1,7 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.useCases;
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserFoundException;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.CreatePatientRequestDTO;
@@ -16,6 +17,9 @@ public class CreatePatientUseCase {
     private PatientRepository patientRepository;
 
     @Autowired
+    private DoctorRepository doctorRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public CreatePatientResponseDTO execute(CreatePatientRequestDTO createPatientRequestDTO){
@@ -23,6 +27,10 @@ public class CreatePatientUseCase {
         this.patientRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(createPatientRequestDTO.getUsername(),
                 createPatientRequestDTO.getEmail()).ifPresent(user -> {
                     throw new UserFoundException();
+        });
+
+        this.doctorRepository.findByEmailIgnoreCase(createPatientRequestDTO.getEmail()).ifPresent(user -> {
+            throw new UserFoundException();
         });
 
         var hashPassword = passwordEncoder.encode(createPatientRequestDTO.getPassword());

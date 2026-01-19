@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                         auth.requestMatchers("/patient/").permitAll()
                                 .requestMatchers("/doctor/").permitAll()
-                                .requestMatchers("/patient/auth").permitAll()
+                                .requestMatchers("/login/").permitAll()
                                 .requestMatchers(SWAGGER_LIST).permitAll();
                         auth.anyRequest().authenticated();
                 });

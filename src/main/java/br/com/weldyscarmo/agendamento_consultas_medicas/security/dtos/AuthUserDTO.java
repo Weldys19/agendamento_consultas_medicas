@@ -1,4 +1,4 @@
-package br.com.weldyscarmo.agendamento_consultas_medicas.security;
+package br.com.weldyscarmo.agendamento_consultas_medicas.security.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthUser {
+public class AuthUserDTO {
 
     private UUID id;
     private String email;
