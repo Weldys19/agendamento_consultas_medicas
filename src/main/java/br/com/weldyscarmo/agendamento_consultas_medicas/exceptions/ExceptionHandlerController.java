@@ -40,4 +40,14 @@ public class ExceptionHandlerController {
     public ResponseEntity<String> handlerInvalidCredentialsException(InvalidCredentialsException e){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handlerUserNotFoundException(UserNotFoundException e){
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDayException.class)
+    public ResponseEntity<String> handlerInvalidDayException(InvalidDayException e){
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

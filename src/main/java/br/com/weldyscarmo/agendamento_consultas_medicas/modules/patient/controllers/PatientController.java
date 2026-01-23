@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -46,8 +47,16 @@ public class PatientController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+    @Operation(summary = "Atualizar dados do paciente",
+            description = "Essa função é responsável pela atualização de dados do paciente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(schema = @Schema(implementation = PatientResponseDTO.class))
+            })
+    })
     @PatchMapping("/me")
     @PreAuthorize("hasRole('PATIENT')")
+    @SecurityRequirement(name = "jwt_auth")
     public ResponseEntity<PatientResponseDTO> update(HttpServletRequest request,
             @Valid @RequestBody UpdateDataPatientRequestDTO updateDataPatientRequestDTO){
 

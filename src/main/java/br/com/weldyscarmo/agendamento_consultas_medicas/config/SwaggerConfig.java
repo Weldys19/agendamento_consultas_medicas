@@ -1,6 +1,7 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.config;
 
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -14,6 +15,12 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Agendamento de consultas médicas")
                         .description("API de agendendamento para consultas médicas")
-                        .version("1"));
+                        .version("1"))
+                .schemaRequirement("jwt_auth", creatSecurityScheme());
+    }
+
+    private SecurityScheme creatSecurityScheme(){
+        return new SecurityScheme().name("jwt_auth")
+                .scheme("bearer").bearerFormat("JWT").type(SecurityScheme.Type.HTTP);
     }
 }
