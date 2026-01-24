@@ -1,5 +1,6 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.controllers;
 
+import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserNotFoundException;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorResponseDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases.CreateDoctorUseCase;
@@ -32,7 +33,9 @@ public class DoctorController {
             @ApiResponse(responseCode = "201", content = {
                     @Content(schema = @Schema(implementation = CreateDoctorResponseDTO.class))
             }),
-            @ApiResponse(responseCode = "400", description = "Usuário já existe")
+            @ApiResponse(responseCode = "400", description = "Usuário já existe", content = {
+                    @Content(schema = @Schema(implementation = String.class))
+            })
     })
     @PostMapping("/")
     public ResponseEntity<CreateDoctorResponseDTO> create(@Valid @RequestBody CreateDoctorRequestDTO createDoctorRequestDTO){

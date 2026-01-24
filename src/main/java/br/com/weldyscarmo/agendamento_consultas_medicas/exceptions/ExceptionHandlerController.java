@@ -45,7 +45,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handlerUserNotFoundException(UserNotFoundException e){
-        return ResponseEntity.badRequest().body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(InvalidScheduleException.class)
@@ -55,11 +55,12 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorMessageDTO> handlerHttpMessageNotReadableException(HttpMessageNotReadableException e){
-        return ResponseEntity.badRequest().body(new ErrorMessageDTO("dayOfweek", "Dia da semana inválido"));
+        return ResponseEntity.badRequest().body(new ErrorMessageDTO("requestBody",
+                "Os campos informados contém valores inválidos"));
     }
 
     @ExceptionHandler(OverlappingSchedulesException.class)
     public ResponseEntity<String> handlerOverlappingSchedulesException(OverlappingSchedulesException e){
-        return ResponseEntity.badRequest().body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }
