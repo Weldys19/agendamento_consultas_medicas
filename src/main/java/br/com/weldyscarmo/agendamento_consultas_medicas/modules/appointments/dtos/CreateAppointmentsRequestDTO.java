@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
@@ -14,6 +14,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class CreateAppointmentsRequestDTO{
 
-    private DayOfWeek day;
+    private LocalDate date;
     private LocalTime startTime;
 }

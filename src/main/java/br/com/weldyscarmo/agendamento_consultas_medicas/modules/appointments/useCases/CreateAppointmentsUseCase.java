@@ -18,6 +18,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientR
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,8 @@ public class CreateAppointmentsUseCase {
 
         LocalTime endTime = createAppointmentsRequestDTO.getStartTime().plusHours(1);
 
+        DayOfWeek day = createAppointmentsRequestDTO.getDate().getDayOfWeek();
+
         PatientEntity patientEntity = this.patientRepository.findById(patientId).orElseThrow(() -> {
             throw new UserNotFoundException();
         });
@@ -51,7 +54,7 @@ public class CreateAppointmentsUseCase {
 
         List<DoctorScheduleEntity> schedule = doctorAvailable(doctorId, createAppointmentsRequestDTO);
         List<AppointmentsEntity> appointmentsDoctor = this.appointmentsRepository.findAllByDoctorIdAndDay(doctorId,
-                createAppointmentsRequestDTO.getDay());
+                day);
 
         boolean invalidSchedule = true;
         for (DoctorScheduleEntity scheduleEntity : schedule){
@@ -68,13 +71,15 @@ public class CreateAppointmentsUseCase {
 
         for (AppointmentsEntity appointments : appointmentsDoctor) {
             if (createAppointmentsRequestDTO.getStartTime().isBefore(appointments.getEndTime())
-                    && endTime.isAfter(appointments.getStartTime())){
+                    && endTime.isAfter(appointments.getStartTime())
+            && appointments.getStatus().equals(AppointmentsStatus.SCHEDULED)
+            && appointments.getDate().isEqual(createAppointmentsRequestDTO.getDate())){
                 throw new UnavailableScheduleException();
             }
         }
 
         AppointmentsEntity appointmentsEntity = AppointmentsEntity.builder()
-                .day(createAppointmentsRequestDTO.getDay())
+                .date(createAppointmentsRequestDTO.getDate())
                 .doctorId(doctorId)
                 .patientId(patientId)
                 .startTime(createAppointmentsRequestDTO.getStartTime())
@@ -90,7 +95,7 @@ public class CreateAppointmentsUseCase {
                 .doctorId(saved.getDoctorId())
                 .startTime(saved.getStartTime())
                 .endTime(saved.getEndTime())
-                .day(saved.getDay())
+                .date(saved.getDate())
                 .status(saved.getStatus())
                 .createdAt(saved.getCreatedAt())
                 .build();
@@ -103,7 +108,7 @@ public class CreateAppointmentsUseCase {
         List<DoctorScheduleEntity> dailySchedules = new ArrayList<>();
 
         for (DoctorScheduleEntity schedule : doctorSchedule) {
-            if (createAppointmentsRequestDTO.getDay() == schedule.getDayOfWeek()) {
+            if (createAppointmentsRequestDTO.getDate().getDayOfWeek() == schedule.getDayOfWeek()) {
                 dailySchedules.add(schedule);
             }
         }

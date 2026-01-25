@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -40,8 +41,7 @@ public class AppointmentsEntity {
     @Column(name = "doctor_id")
     private UUID doctorId;
 
-    @Enumerated(EnumType.STRING)
-    private DayOfWeek day;
+    private LocalDate date;
 
     private LocalTime startTime;
     private LocalTime endTime;
