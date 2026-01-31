@@ -5,7 +5,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientE
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.PatientResponseDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.UpdateDataPatientRequestDTO;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,7 @@ public class UpdateDataPatientUseCase {
     @Autowired
     private PatientRepository patientRepository;
 
+    @Transactional
     public PatientResponseDTO execute(UpdateDataPatientRequestDTO updateDataPatientRequestDTO,
                                       UUID idPatient){
 

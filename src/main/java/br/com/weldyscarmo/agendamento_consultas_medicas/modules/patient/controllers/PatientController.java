@@ -1,7 +1,5 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.controllers;
 
-import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserFoundException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorResponseDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.CreatePatientRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.PatientResponseDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.UpdateDataPatientRequestDTO;

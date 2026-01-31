@@ -4,7 +4,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserFoundExce
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorRequestDTO;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorResponseDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.DoctorResponseDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +22,7 @@ public class CreateDoctorUseCase {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public CreateDoctorResponseDTO execute(CreateDoctorRequestDTO createDoctorRequestDTO){
+    public DoctorResponseDTO execute(CreateDoctorRequestDTO createDoctorRequestDTO){
         this.doctorRepository.findByEmailIgnoreCase(createDoctorRequestDTO.getEmail()).ifPresent(user -> {
                     throw new UserFoundException();
         });
@@ -43,7 +43,7 @@ public class CreateDoctorUseCase {
 
         DoctorEntity savedDoctor = this.doctorRepository.save(doctorEntity);
 
-        return CreateDoctorResponseDTO.builder()
+        return DoctorResponseDTO.builder()
                 .id(savedDoctor.getId())
                 .name(savedDoctor.getName())
                 .email(savedDoctor.getEmail())

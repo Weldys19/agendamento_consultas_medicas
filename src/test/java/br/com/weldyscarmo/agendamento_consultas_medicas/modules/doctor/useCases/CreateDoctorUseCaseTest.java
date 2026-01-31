@@ -4,7 +4,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserFoundExce
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorRequestDTO;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorResponseDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.DoctorResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -53,7 +53,7 @@ public class CreateDoctorUseCaseTest {
 
         when(this.doctorRepository.save(any(DoctorEntity.class))).thenReturn(doctorIdGenerated);
 
-        CreateDoctorResponseDTO result = this.createDoctorUseCase.execute(doctorDTO);
+        DoctorResponseDTO result = this.createDoctorUseCase.execute(doctorDTO);
 
         assertThat(result.getId()).isEqualTo(doctorIdGenerated.getId());
         verify(passwordEncoder).encode(any(String.class));
