@@ -82,4 +82,14 @@ public class ExceptionHandlerController {
     public ResponseEntity<String> handlerInvalidDateException(InvalidDateException e){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
+
+    @ExceptionHandler(InvalidTimeExclusionException.class)
+    public ResponseEntity<String> handlerInvalidTimeExclusionException(InvalidTimeExclusionException e){
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(TimeNotFoundException.class)
+    public ResponseEntity<String> handlerTimeNotFoundException(TimeNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }

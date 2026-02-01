@@ -3,6 +3,7 @@ package br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.controll
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.ErrorMessageDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorScheduleRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.DoctorScheduleResponseDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases.DeleteOpeningHoursUseCase;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases.SetOpeningHoursUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -29,6 +27,9 @@ public class DoctorScheduleController {
 
     @Autowired
     private SetOpeningHoursUseCase setOpeningHoursUseCase;
+
+    @Autowired
+    private DeleteOpeningHoursUseCase deleteOpeningHoursUseCase;
 
     @Operation(summary = "Definir horários de atendimento",
             description = "Essa função é responsável por definir os horários de atendimento de um médico")
@@ -54,5 +55,13 @@ public class DoctorScheduleController {
 
         DoctorScheduleResponseDTO result = this.setOpeningHoursUseCase.execute(doctorId, createDoctorScheduleRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<Void> delete(HttpServletRequest request, @PathVariable UUID id){
+        UUID doctorId = UUID.fromString(request.getAttribute("user_id").toString());
+        this.deleteOpeningHoursUseCase.execute(doctorId, id);
+        return ResponseEntity.noContent().build();
     }
 }
