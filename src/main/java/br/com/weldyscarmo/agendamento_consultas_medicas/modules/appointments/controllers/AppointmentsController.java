@@ -5,6 +5,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dto
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.AppointmentsResponseDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.useCases.CreateAppointmentsUseCase;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.useCases.DoctorAppointmentsOnTheDayUseCase;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.useCases.PatientAppointmentsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,6 +32,9 @@ public class AppointmentsController {
 
     @Autowired
     private DoctorAppointmentsOnTheDayUseCase doctorAppointmentsOnTheDayUseCase;
+
+    @Autowired
+    private PatientAppointmentsUseCase patientAppointmentsUseCase;
 
     @Operation(summary = "Agendar consultas",
             description = "Essa função é responsável por agendar novas consultas")
@@ -61,10 +65,19 @@ public class AppointmentsController {
 
     @GetMapping("/doctor")
     @PreAuthorize("hasRole('DOCTOR')")
-    public ResponseEntity<List<AppointmentsResponseDTO>> listAppointments(HttpServletRequest request){
+    public ResponseEntity<List<AppointmentsResponseDTO>> listAppointmentsDoctor(HttpServletRequest request){
 
         UUID doctorId = UUID.fromString(request.getAttribute("user_id").toString());
         List<AppointmentsResponseDTO> result = this.doctorAppointmentsOnTheDayUseCase.execute(doctorId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/patient")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<List<AppointmentsResponseDTO>> listAppointmentsPatient(HttpServletRequest request){
+
+        UUID patientId = UUID.fromString(request.getAttribute("user_id").toString());
+        List<AppointmentsResponseDTO> result = this.patientAppointmentsUseCase.execute(patientId);
         return ResponseEntity.ok(result);
     }
 }

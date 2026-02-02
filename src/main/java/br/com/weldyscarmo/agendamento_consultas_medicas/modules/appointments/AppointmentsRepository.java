@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface AppointmentsRepository extends JpaRepository<AppointmentsEntity, UUID> {
 
     List<AppointmentsEntity> findAllByDoctorIdAndDate(UUID doctorId, LocalDate date);
+    List<AppointmentsEntity> findAllByPatientId(UUID patientId);
 }
