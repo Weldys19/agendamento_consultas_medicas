@@ -1,6 +1,7 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.useCases;
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserFoundException;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.CreatePatientRequestDTO;
@@ -33,6 +34,9 @@ public class CreatePatientUseCaseTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private DoctorRepository doctorRepository;
+
     @Test
     public void itShouldBePossibleToCreateAPatient(){
 
@@ -50,6 +54,9 @@ public class CreatePatientUseCaseTest {
 
         when(this.patientRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(patient.getUsername(),
                 patient.getEmail())).thenReturn(Optional.empty());
+
+        when(this.doctorRepository.findByEmailIgnoreCase(patient.getEmail()))
+                .thenReturn(Optional.empty());
 
         when(this.patientRepository.save(any(PatientEntity.class))).thenReturn(patientIdGenerate);
 

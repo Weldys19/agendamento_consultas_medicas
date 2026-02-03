@@ -40,111 +40,89 @@ public class SetOpeningHoursUseCaseTest {
     @Mock
     private DoctorRepository doctorRepository;
 
+    private UUID doctorId;
+
+    @BeforeEach
+    void setup() {
+        doctorId = UUID.randomUUID();
+    }
+
     @Nested
-    class WhenDoctorExists {
+    class WhenScheduleIsValid {
 
-        DoctorEntity doctorEntity;
+        @Test
+        public void shouldCreateDoctorSchedule(){
 
-        @BeforeEach
-        void setup() {
-            doctorEntity = builderDoctorEntity();
+            CreateDoctorScheduleRequestDTO dto = builderCreateDoctorSchedule(
+                    DayOfWeek.MONDAY, LocalTime.of(9,0), LocalTime.of(18, 0));
 
-            when(doctorRepository.findById(doctorEntity.getId()))
-                    .thenReturn(Optional.of(doctorEntity));
-        }
+            DoctorScheduleEntity doctorScheduleEntity = builderDoctorScheduleEntity(doctorId,
+                    dto.getDayOfWeek(), dto.getStartTime(), dto.getEndTime());
 
-        @Nested
-        class AndScheduleIsValid {
+            when(doctorScheduleRepository.findAllByDoctorId(doctorId))
+                    .thenReturn(List.of());
 
-            @Test
-            public void shouldCreateDoctorSchedule(){
+            when(doctorScheduleRepository.save(any(DoctorScheduleEntity.class)))
+                    .thenReturn(doctorScheduleEntity);
 
-                CreateDoctorScheduleRequestDTO dto = builderCreateDoctorSchedule(
-                        DayOfWeek.MONDAY, LocalTime.of(9,0), LocalTime.of(18, 0));
+            DoctorScheduleResponseDTO result = setOpeningHoursUseCase.execute(doctorId, dto);
 
-                DoctorScheduleEntity doctorScheduleEntity = builderDoctorScheduleEntity(doctorEntity.getId(),
-                        dto.getDayOfWeek(), dto.getStartTime(), dto.getEndTime());
-
-                when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
-                        .thenReturn(List.of());
-
-                when(doctorScheduleRepository.save(any(DoctorScheduleEntity.class)))
-                        .thenReturn(doctorScheduleEntity);
-
-                DoctorScheduleResponseDTO result = setOpeningHoursUseCase.execute(doctorEntity.getId(), dto);
-
-                assertThat(result.getId()).isNotNull();
-                assertThat(result.getDoctorId()).isEqualTo(doctorEntity.getId());
-                assertThat(result.getDayOfWeek()).isEqualTo(dto.getDayOfWeek());
-                assertThat(result.getStartTime()).isEqualTo(dto.getStartTime());
-                assertThat(result.getEndTime()).isEqualTo(dto.getEndTime());
-            }
-        }
-
-        @Nested
-        class AndScheduleIsNotValid{
-
-            CreateDoctorScheduleRequestDTO dto;
-
-            @BeforeEach
-            void setup(){
-                dto = builderCreateDoctorSchedule(
-                        DayOfWeek.MONDAY, LocalTime.of(9,0), LocalTime.of(18, 0));
-            }
-
-            @Test
-            public void shouldThrowExceptionWhenStartTimeIsAfterEndTime() {
-
-                 dto = builderCreateDoctorSchedule(
-                        DayOfWeek.MONDAY, LocalTime.of(15,0), LocalTime.of(9, 0));
-
-                assertThatThrownBy(() -> {
-                    setOpeningHoursUseCase.execute(doctorEntity.getId(), dto);
-                }).isInstanceOf(InvalidScheduleException.class);
-            }
-
-            @Test
-            public void shouldThrowExceptionWhenStartTimeConflictsWithEndTimeOnSameDay(){
-
-                DoctorScheduleEntity doctorScheduleEntity = builderDoctorScheduleEntity(doctorEntity.getId(),
-                        dto.getDayOfWeek(), LocalTime.of(16,0), LocalTime.of(20, 0));
-
-                when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
-                        .thenReturn(List.of(doctorScheduleEntity));
-
-                assertThatThrownBy(() -> {
-                    setOpeningHoursUseCase.execute(doctorEntity.getId(), dto);
-                }).isInstanceOf(OverlappingSchedulesException.class);
-            }
-
-            @Test
-            public void shouldThrowExceptionWhenEndTimeConflictsWithStartTimeOnSameDay(){
-
-                DoctorScheduleEntity doctorScheduleEntity = builderDoctorScheduleEntity(doctorEntity.getId(),
-                        dto.getDayOfWeek(), LocalTime.of(5,0), LocalTime.of(10, 0));
-
-                when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
-                        .thenReturn(List.of(doctorScheduleEntity));
-
-                assertThatThrownBy(() -> {
-                    setOpeningHoursUseCase.execute(doctorEntity.getId(), dto);
-                }).isInstanceOf(OverlappingSchedulesException.class);
-            }
+            assertThat(result.getId()).isNotNull();
+            assertThat(result.getDoctorId()).isEqualTo(doctorId);
+            assertThat(result.getDayOfWeek()).isEqualTo(dto.getDayOfWeek());
+            assertThat(result.getStartTime()).isEqualTo(dto.getStartTime());
+            assertThat(result.getEndTime()).isEqualTo(dto.getEndTime());
         }
     }
 
     @Nested
-    class WhenDoctorNotExists{
+    class WhenScheduleIsInvalid{
+
+        CreateDoctorScheduleRequestDTO dto;
+
+        @BeforeEach
+        void setup(){
+            dto = builderCreateDoctorSchedule(
+                    DayOfWeek.MONDAY, LocalTime.of(9,0), LocalTime.of(18, 0));
+        }
 
         @Test
-        public void shouldThrowExceptionWhenDoctorDoesNotExist(){
+        public void shouldThrowExceptionWhenStartTimeIsAfterEndTime() {
 
-            when(doctorRepository.findById(any(UUID.class)))
-                    .thenReturn(Optional.empty());
+             dto = builderCreateDoctorSchedule(
+                    DayOfWeek.MONDAY, LocalTime.of(15,0), LocalTime.of(9, 0));
 
             assertThatThrownBy(() -> {
-                setOpeningHoursUseCase.execute(UUID.randomUUID(), new CreateDoctorScheduleRequestDTO());
-            }).isInstanceOf(UserNotFoundException.class);
+                setOpeningHoursUseCase.execute(doctorId, dto);
+            }).isInstanceOf(InvalidScheduleException.class);
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenStartTimeConflictsWithEndTimeOnSameDay(){
+
+            DoctorScheduleEntity doctorScheduleEntity = builderDoctorScheduleEntity(doctorId,
+                    dto.getDayOfWeek(), LocalTime.of(16,0), LocalTime.of(20, 0));
+
+            when(doctorScheduleRepository.findAllByDoctorId(doctorId))
+                    .thenReturn(List.of(doctorScheduleEntity));
+
+            assertThatThrownBy(() -> {
+                setOpeningHoursUseCase.execute(doctorId, dto);
+            }).isInstanceOf(OverlappingSchedulesException.class);
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenEndTimeConflictsWithStartTimeOnSameDay(){
+
+            DoctorScheduleEntity doctorScheduleEntity = builderDoctorScheduleEntity(doctorId,
+                    dto.getDayOfWeek(), LocalTime.of(5,0), LocalTime.of(10, 0));
+
+            when(doctorScheduleRepository.findAllByDoctorId(doctorId))
+                    .thenReturn(List.of(doctorScheduleEntity));
+
+            assertThatThrownBy(() -> {
+                setOpeningHoursUseCase.execute(doctorId, dto);
+            }).isInstanceOf(OverlappingSchedulesException.class);
         }
     }
 
@@ -164,12 +142,6 @@ public class SetOpeningHoursUseCaseTest {
                 .dayOfWeek(day)
                 .startTime(start)
                 .endTime(end)
-                .build();
-    }
-
-    private DoctorEntity builderDoctorEntity(){
-        return DoctorEntity.builder()
-                .id(UUID.randomUUID())
                 .build();
     }
 }

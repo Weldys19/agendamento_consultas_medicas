@@ -24,12 +24,8 @@ public class PatientAppointmentsUseCase {
 
     public List<AppointmentsResponseDTO> execute(UUID patientId){
 
-        PatientEntity patientEntity = this.patientRepository.findById(patientId).orElseThrow(() -> {
-            throw new UserNotFoundException();
-        });
-
         List<AppointmentsEntity> appointmentsEntity = this.appointmentsRepository
-                .findAllByPatientId(patientEntity.getId());
+                .findAllByPatientId(patientId);
 
         List<AppointmentsResponseDTO> appointmentsResponseDTO = new ArrayList<>();
 

@@ -57,6 +57,13 @@ public class DoctorScheduleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+    @Operation(summary = "Deletar horário de atendimento",
+            description = "Essa função é responsável por deletar um horário de atendimento de um médico")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "404",
+                    description = "Horário não encontrado"),
+    })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<Void> delete(HttpServletRequest request, @PathVariable UUID id){

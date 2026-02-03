@@ -10,8 +10,6 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEnt
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleRepository;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientEntity;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +26,6 @@ public class CreateAppointmentsUseCase {
     private AppointmentsRepository appointmentsRepository;
 
     @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
     private DoctorRepository doctorRepository;
 
     @Autowired
@@ -38,9 +33,6 @@ public class CreateAppointmentsUseCase {
 
     public AppointmentsResponseDTO execute(UUID patientId, UUID doctorId, CreateAppointmentsRequestDTO createAppointmentsRequestDTO){
 
-        PatientEntity patientEntity = this.patientRepository.findById(patientId).orElseThrow(() -> {
-            throw new UserNotFoundException();
-        });
         DoctorEntity doctorEntity = this.doctorRepository.findById(doctorId).orElseThrow(() -> {
             throw new UserNotFoundException();
         });

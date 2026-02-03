@@ -5,6 +5,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEnt
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.DoctorResponseDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

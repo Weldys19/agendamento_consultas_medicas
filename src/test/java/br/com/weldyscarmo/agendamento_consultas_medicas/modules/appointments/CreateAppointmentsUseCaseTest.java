@@ -40,73 +40,88 @@ public class CreateAppointmentsUseCaseTest {
     private AppointmentsRepository appointmentsRepository;
 
     @Mock
-    private PatientRepository patientRepository;
-
-    @Mock
     private DoctorRepository doctorRepository;
 
     @Mock
     private DoctorScheduleRepository doctorScheduleRepository;
 
-    @Nested
-    class WhenPatientExists{
+    UUID patientId;
 
-        PatientEntity patientEntity;
+    @BeforeEach
+    void setup(){
+        patientId = UUID.randomUUID();
+    }
+
+    @Nested
+    class WhenDoctorExists{
+
+        DoctorEntity doctorEntity;
+        CreateAppointmentsRequestDTO appointmentsRequestDTO;
+        LocalTime endTime;
+        List<DoctorScheduleEntity> schedules;
+        List<AppointmentsEntity> appointments;
 
         @BeforeEach
         void setup(){
-
-            patientEntity = PatientEntity.builder()
+            doctorEntity = DoctorEntity.builder()
                     .id(UUID.randomUUID())
+                    .consultationDurationInMinutes(30L)
                     .build();
+            when(doctorRepository.findById(doctorEntity.getId()))
+                    .thenReturn(Optional.of(doctorEntity));
 
-            when(patientRepository.findById(patientEntity.getId()))
-                    .thenReturn(Optional.of(patientEntity));
+            appointmentsRequestDTO = builderCreateAppointmentsRequest();
+
+            endTime = appointmentsRequestDTO.getStartTime()
+                    .plusMinutes(doctorEntity.getConsultationDurationInMinutes());
+
+            schedules = builderAllDoctorSchedule(doctorEntity);
+
+            appointments = builderAllDoctorAppointments(doctorEntity, appointmentsRequestDTO);
         }
 
         @Nested
-        class WhenDoctorExists{
+        class AndAppointmentIsValid{
 
-            DoctorEntity doctorEntity;
-            CreateAppointmentsRequestDTO appointmentsRequestDTO;
-            LocalTime endTime;
-            List<DoctorScheduleEntity> schedules;
-            List<AppointmentsEntity> appointments;
+            @Test
+            public void shouldCreateAppointmentWhenScheduleIsValid(){
 
-            @BeforeEach
-            void setup(){
-                doctorEntity = DoctorEntity.builder()
+                AppointmentsEntity appointmentsEntity = AppointmentsEntity.builder()
                         .id(UUID.randomUUID())
-                        .consultationDurationInMinutes(30L)
+                        .date(appointmentsRequestDTO.getDate())
+                        .doctorId(doctorEntity.getId())
+                        .patientId(patientId)
+                        .startTime(appointmentsRequestDTO.getStartTime())
+                        .endTime(endTime)
+                        .status(AppointmentsStatus.SCHEDULED)
                         .build();
-                when(doctorRepository.findById(doctorEntity.getId()))
-                        .thenReturn(Optional.of(doctorEntity));
 
-                appointmentsRequestDTO = builderCreateAppointmentsRequest();
+                when(appointmentsRepository.findAllByDoctorIdAndDate(doctorEntity.getId(),
+                        appointmentsRequestDTO.getDate())).thenReturn(appointments);
 
-                endTime = appointmentsRequestDTO.getStartTime()
-                        .plusMinutes(doctorEntity.getConsultationDurationInMinutes());
+                when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
+                        .thenReturn(schedules);
 
-                schedules = builderAllDoctorSchedule(doctorEntity);
+                when(appointmentsRepository.save(any(AppointmentsEntity.class)))
+                        .thenReturn(appointmentsEntity);
 
-                appointments = builderAllDoctorAppointments(doctorEntity, appointmentsRequestDTO);
+                AppointmentsResponseDTO result = createAppointmentsUseCase.execute
+                        (patientId, doctorEntity.getId(), appointmentsRequestDTO);
+
+                assertThat(result.getPatientId()).isEqualTo(patientId);
+                assertThat(result.getDoctorId()).isEqualTo(doctorEntity.getId());
+                assertThat(result.getDate()).isEqualTo(appointmentsRequestDTO.getDate());
+                assertThat(result.getStartTime()).isEqualTo(appointmentsRequestDTO.getStartTime());
+                assertThat(result.getEndTime()).isEqualTo(endTime);
             }
 
             @Nested
-            class AndAppointmentIsValid{
+            class AndAppointmentNIsInvalid{
 
                 @Test
-                public void shouldCreateAppointmentWhenScheduleIsValid(){
+                public void shouldNotCreateANewAppointmentIfTheDateOverlapsWithOneThatHasAlreadyBeenRegistered(){
 
-                    AppointmentsEntity appointmentsEntity = AppointmentsEntity.builder()
-                            .id(UUID.randomUUID())
-                            .date(appointmentsRequestDTO.getDate())
-                            .doctorId(doctorEntity.getId())
-                            .patientId(patientEntity.getId())
-                            .startTime(appointmentsRequestDTO.getStartTime())
-                            .endTime(endTime)
-                            .status(AppointmentsStatus.SCHEDULED)
-                            .build();
+                    appointmentsRequestDTO.setStartTime(LocalTime.of(10, 0));
 
                     when(appointmentsRepository.findAllByDoctorIdAndDate(doctorEntity.getId(),
                             appointmentsRequestDTO.getDate())).thenReturn(appointments);
@@ -114,110 +129,66 @@ public class CreateAppointmentsUseCaseTest {
                     when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
                             .thenReturn(schedules);
 
-                    when(appointmentsRepository.save(any(AppointmentsEntity.class)))
-                            .thenReturn(appointmentsEntity);
-
-                    AppointmentsResponseDTO result = createAppointmentsUseCase.execute
-                            (patientEntity.getId(), doctorEntity.getId(), appointmentsRequestDTO);
-
-                    assertThat(result.getPatientId()).isEqualTo(patientEntity.getId());
-                    assertThat(result.getDoctorId()).isEqualTo(doctorEntity.getId());
-                    assertThat(result.getDate()).isEqualTo(appointmentsRequestDTO.getDate());
-                    assertThat(result.getStartTime()).isEqualTo(appointmentsRequestDTO.getStartTime());
-                    assertThat(result.getEndTime()).isEqualTo(endTime);
+                    assertThatThrownBy(() -> {
+                        createAppointmentsUseCase.execute
+                                (patientId, doctorEntity.getId(), appointmentsRequestDTO);
+                    }).isInstanceOf(UnavailableScheduleException.class);
                 }
 
-                @Nested
-                class AndAppointmentNIsInvalid{
+                @Test
+                public void shouldNotCreateAppointmentWhenDateIsBeforeToday(){
 
-                    @Test
-                    public void shouldNotCreateANewAppointmentIfTheDateOverlapsWithOneThatHasAlreadyBeenRegistered(){
+                    appointmentsRequestDTO.setDate(LocalDate.now().minusDays(2));
 
-                        appointmentsRequestDTO.setStartTime(LocalTime.of(10, 0));
-
-                        when(appointmentsRepository.findAllByDoctorIdAndDate(doctorEntity.getId(),
-                                appointmentsRequestDTO.getDate())).thenReturn(appointments);
-
-                        when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
-                                .thenReturn(schedules);
-
-                        assertThatThrownBy(() -> {
-                            createAppointmentsUseCase.execute
-                                    (patientEntity.getId(), doctorEntity.getId(), appointmentsRequestDTO);
-                        }).isInstanceOf(UnavailableScheduleException.class);
-                    }
-
-                    @Test
-                    public void shouldNotCreateAppointmentWhenDateIsBeforeToday(){
-
-                        appointmentsRequestDTO.setDate(LocalDate.now().minusDays(2));
-
-                        assertThatThrownBy(() -> {
-                            createAppointmentsUseCase.execute(patientEntity.getId(), doctorEntity.getId(),
-                                    appointmentsRequestDTO);
-                        }).isInstanceOf(InvalidDateException.class);
-                    }
-
-                    @Test
-                    public void shouldNotCreateAppointmentWhenDoctorDoesNotWorkOnThatDay(){
-
-                        schedules.getFirst().setDayOfWeek(LocalDate.now().getDayOfWeek());
-
-                        when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
-                                .thenReturn(schedules);
-
-                        assertThatThrownBy(() -> {
-                            createAppointmentsUseCase.execute(patientEntity.getId(), doctorEntity.getId(),
-                                    appointmentsRequestDTO);
-                        }).isInstanceOf(InvalidAppointmentDayException.class);
-                    }
-
-                    @Test
-
-                    public void shouldNotCreateAppointmentWhenDoctorIsNotAvailableAtThatTime(){
-
-                        appointmentsRequestDTO.setStartTime(LocalTime.of(7, 0));
-
-                        when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
-                                .thenReturn(schedules);
-
-                        assertThatThrownBy(() -> {
-                            createAppointmentsUseCase.execute(patientEntity.getId(), doctorEntity.getId(),
-                                    appointmentsRequestDTO);
-                        }).isInstanceOf(InvalidAppointmentHourException.class);
-                    }
+                    assertThatThrownBy(() -> {
+                        createAppointmentsUseCase.execute(patientId, doctorEntity.getId(),
+                                appointmentsRequestDTO);
+                    }).isInstanceOf(InvalidDateException.class);
                 }
-            }
-        }
 
-        @Nested
-        class WhenDoctorNotExists{
+                @Test
+                public void shouldNotCreateAppointmentWhenDoctorDoesNotWorkOnThatDay(){
 
-            @Test
-            public void shouldNotCreateAppointmentWhenDoctorDoesNotExist(){
+                    schedules.getFirst().setDayOfWeek(LocalDate.now().getDayOfWeek());
 
-                when(doctorRepository.findById(any(UUID.class)))
-                        .thenReturn(Optional.empty());
+                    when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
+                            .thenReturn(schedules);
 
-                assertThatThrownBy(() -> {
-                    createAppointmentsUseCase.execute(patientEntity.getId(), UUID.randomUUID(),
-                            new CreateAppointmentsRequestDTO());
-                }).isInstanceOf(UserNotFoundException.class);
+                    assertThatThrownBy(() -> {
+                        createAppointmentsUseCase.execute(patientId, doctorEntity.getId(),
+                                appointmentsRequestDTO);
+                    }).isInstanceOf(InvalidAppointmentDayException.class);
+                }
+
+                @Test
+
+                public void shouldNotCreateAppointmentWhenDoctorIsNotAvailableAtThatTime(){
+
+                    appointmentsRequestDTO.setStartTime(LocalTime.of(7, 0));
+
+                    when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
+                            .thenReturn(schedules);
+
+                    assertThatThrownBy(() -> {
+                        createAppointmentsUseCase.execute(patientId, doctorEntity.getId(),
+                                appointmentsRequestDTO);
+                    }).isInstanceOf(InvalidAppointmentHourException.class);
+                }
             }
         }
     }
 
     @Nested
-    class WhenPatientNotExists{
+    class WhenDoctorNotExists{
 
         @Test
-        public void shouldNotCreateAppointmentWhenDoctorDoesNotExist() {
+        public void shouldNotCreateAppointmentWhenDoctorDoesNotExist(){
 
-            when(patientRepository.findById(any(UUID.class)))
+            when(doctorRepository.findById(any(UUID.class)))
                     .thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> {
-                createAppointmentsUseCase.execute(UUID.randomUUID(), UUID.randomUUID(),
+                createAppointmentsUseCase.execute(patientId, UUID.randomUUID(),
                         new CreateAppointmentsRequestDTO());
             }).isInstanceOf(UserNotFoundException.class);
         }

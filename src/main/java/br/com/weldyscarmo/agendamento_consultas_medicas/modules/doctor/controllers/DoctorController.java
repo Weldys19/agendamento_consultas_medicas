@@ -5,6 +5,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.Doct
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.UpdateDataDoctorRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases.CreateDoctorUseCase;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases.UpdateDataDoctorUseCase;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.PatientResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -48,6 +49,13 @@ public class DoctorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+    @Operation(summary = "Atualizar dados do médico",
+            description = "Essa função é responsável pela atualização de dados do médico")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(schema = @Schema(implementation = DoctorResponseDTO.class))
+            })
+    })
     @PatchMapping("/me")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<DoctorResponseDTO> update(@RequestBody UpdateDataDoctorRequestDTO updateDataDoctorRequestDTO,

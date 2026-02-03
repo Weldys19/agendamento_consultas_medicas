@@ -22,14 +22,7 @@ public class SetOpeningHoursUseCase {
     @Autowired
     private DoctorScheduleRepository doctorScheduleRepository;
 
-    @Autowired
-    private DoctorRepository doctorRepository;
-
     public DoctorScheduleResponseDTO execute(UUID doctorId, CreateDoctorScheduleRequestDTO createDoctorScheduleRequestDTO){
-
-        DoctorEntity doctorEntity = this.doctorRepository.findById(doctorId).orElseThrow(() -> {
-            throw new UserNotFoundException();
-        });
 
         if (createDoctorScheduleRequestDTO.getStartTime().
                 isAfter(createDoctorScheduleRequestDTO.getEndTime())){
@@ -40,7 +33,7 @@ public class SetOpeningHoursUseCase {
         schedulingConflict(createDoctorScheduleRequestDTO, doctorId);
 
         DoctorScheduleEntity doctorScheduleEntity = DoctorScheduleEntity.builder()
-                .doctorId(doctorEntity.getId())
+                .doctorId(doctorId)
                 .dayOfWeek(createDoctorScheduleRequestDTO.getDayOfWeek())
                 .startTime(createDoctorScheduleRequestDTO.getStartTime())
                 .endTime(createDoctorScheduleRequestDTO.getEndTime())
