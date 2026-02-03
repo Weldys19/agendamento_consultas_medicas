@@ -2,8 +2,6 @@ package br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.InvalidScheduleException;
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.OverlappingSchedulesException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserNotFoundException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleRepository;
@@ -20,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

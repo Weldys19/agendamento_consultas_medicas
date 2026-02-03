@@ -2,15 +2,13 @@ package br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments;
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.enums.AppointmentsStatus;
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.*;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.CreateAppointmentsRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.AppointmentsResponseDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.CreateAppointmentsRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.useCases.CreateAppointmentsUseCase;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleRepository;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientEntity;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

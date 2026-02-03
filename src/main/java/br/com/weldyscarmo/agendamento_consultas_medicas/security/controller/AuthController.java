@@ -1,7 +1,6 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.security.controller;
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.security.dtos.AuthRequestDTO;
-import br.com.weldyscarmo.agendamento_consultas_medicas.security.dtos.AuthUserDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.security.dtos.TokenResponseDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.security.useCases.AuthUserUseCase;
 import io.swagger.v3.oas.annotations.Operation;

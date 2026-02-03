@@ -1,10 +1,8 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.useCases;
 
-import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserNotFoundException;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.AppointmentsResponseDTO;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

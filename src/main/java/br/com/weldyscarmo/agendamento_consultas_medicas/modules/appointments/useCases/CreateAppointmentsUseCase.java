@@ -4,12 +4,9 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.enums.AppointmentsStatus
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.*;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsRepository;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.CreateAppointmentsRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.AppointmentsResponseDTO;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEntity;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleEntity;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleRepository;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.CreateAppointmentsRequestDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +28,9 @@ public class CreateAppointmentsUseCase {
     @Autowired
     private DoctorScheduleRepository doctorScheduleRepository;
 
+    @Autowired
+    private DoctorTimeBlockRepository doctorTimeBlockRepository;
+
     public AppointmentsResponseDTO execute(UUID patientId, UUID doctorId, CreateAppointmentsRequestDTO createAppointmentsRequestDTO){
 
         DoctorEntity doctorEntity = this.doctorRepository.findById(doctorId).orElseThrow(() -> {
@@ -47,6 +47,9 @@ public class CreateAppointmentsUseCase {
         LocalTime endTime = createAppointmentsRequestDTO.getStartTime().plusMinutes(doctorEntity.getConsultationDurationInMinutes());
 
         List<DoctorScheduleEntity> schedules = doctorAvailable(doctorId, createAppointmentsRequestDTO);
+
+        List<DoctorTimeBlockEntity> timesBlock = this.doctorTimeBlockRepository
+                .findAllByDoctorIdAndDate(doctorId, createAppointmentsRequestDTO.getDate());
 
         List<AppointmentsEntity> appointmentsDoctor = this.appointmentsRepository.findAllByDoctorIdAndDate(doctorId,
                 createAppointmentsRequestDTO.getDate());
@@ -68,6 +71,13 @@ public class CreateAppointmentsUseCase {
             if (createAppointmentsRequestDTO.getStartTime().isBefore(appointments.getEndTime())
                     && endTime.isAfter(appointments.getStartTime())
             && appointments.getStatus().equals(AppointmentsStatus.SCHEDULED)){
+                throw new UnavailableScheduleException();
+            }
+        }
+
+        for (DoctorTimeBlockEntity timeBlock : timesBlock){
+            if (createAppointmentsRequestDTO.getStartTime().isBefore(timeBlock.getEndTime())
+            && endTime.isAfter(timeBlock.getStartTime())){
                 throw new UnavailableScheduleException();
             }
         }

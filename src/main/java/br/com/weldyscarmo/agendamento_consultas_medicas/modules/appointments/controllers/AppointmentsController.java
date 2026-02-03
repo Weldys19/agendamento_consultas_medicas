@@ -1,7 +1,7 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.controllers;
 
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.CreateAppointmentsRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.AppointmentsResponseDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.CreateAppointmentsRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.useCases.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

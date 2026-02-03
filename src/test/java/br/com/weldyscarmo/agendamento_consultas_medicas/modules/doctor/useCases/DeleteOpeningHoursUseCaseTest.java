@@ -1,8 +1,6 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases;
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.TimeNotFoundException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserNotFoundException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleRepository;
@@ -17,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;

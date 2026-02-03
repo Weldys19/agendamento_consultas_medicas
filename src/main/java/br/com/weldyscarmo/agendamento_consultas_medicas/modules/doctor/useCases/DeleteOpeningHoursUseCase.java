@@ -1,7 +1,6 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases;
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.TimeNotFoundException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;

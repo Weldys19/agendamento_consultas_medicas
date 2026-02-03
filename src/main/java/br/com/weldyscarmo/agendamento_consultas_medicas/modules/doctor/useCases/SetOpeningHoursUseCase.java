@@ -2,9 +2,6 @@ package br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.InvalidScheduleException;
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.OverlappingSchedulesException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.UserNotFoundException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEntity;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.CreateDoctorScheduleRequestDTO;

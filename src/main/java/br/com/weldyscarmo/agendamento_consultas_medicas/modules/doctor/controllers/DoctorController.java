@@ -5,7 +5,6 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.Doct
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.dtos.UpdateDataDoctorRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases.CreateDoctorUseCase;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases.UpdateDataDoctorUseCase;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.PatientResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
