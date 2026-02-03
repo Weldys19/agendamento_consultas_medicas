@@ -1,9 +1,8 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases;
 
-import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.InvalidDateException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.InvalidScheduleException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.OverlappingSchedulesException;
-import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.TimeSlotUnavailableForBlockingException;
+import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.*;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsEntity;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorTimeBlockEntity;
@@ -26,6 +25,9 @@ public class BlockTimeUseCase {
     @Autowired
     private DoctorTimeBlockRepository doctorTimeBlockRepository;
 
+    @Autowired
+    private AppointmentsRepository appointmentsRepository;
+
     public DoctorTimeBlockResponseDTO execute(UUID doctorId, DoctorTimeBlockRequestDTO doctorTimeBlockRequestDTO){
 
         if (doctorTimeBlockRequestDTO.getDate().isBefore(LocalDate.now())){
@@ -39,6 +41,9 @@ public class BlockTimeUseCase {
         List<DoctorScheduleEntity> schedules = this.doctorScheduleRepository
                 .findAllByDoctorIdAndDayOfWeek(doctorId, doctorTimeBlockRequestDTO.getDate().getDayOfWeek());
 
+        List<AppointmentsEntity> appointments = this.appointmentsRepository
+                .findAllByDoctorIdAndDate(doctorId, doctorTimeBlockRequestDTO.getDate());
+
         boolean rangeValid = false;
 
         for(DoctorScheduleEntity scheduleEntity : schedules) {
@@ -51,6 +56,13 @@ public class BlockTimeUseCase {
 
         if (!rangeValid){
             throw new TimeSlotUnavailableForBlockingException();
+        }
+
+        for (AppointmentsEntity appointment : appointments){
+            if (doctorTimeBlockRequestDTO.getStartTime().isBefore(appointment.getEndTime())
+            && doctorTimeBlockRequestDTO.getEndTime().isAfter(appointment.getStartTime())){
+                throw new ConflictWithSchedulesException();
+            }
         }
 
         List<DoctorTimeBlockEntity> timesBlock = this.doctorTimeBlockRepository
