@@ -1,5 +1,6 @@
 package br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.useCases;
 
+import br.com.weldyscarmo.agendamento_consultas_medicas.enums.AppointmentsStatus;
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.*;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsRepository;
@@ -60,7 +61,8 @@ public class BlockTimeUseCase {
 
         for (AppointmentsEntity appointment : appointments){
             if (doctorTimeBlockRequestDTO.getStartTime().isBefore(appointment.getEndTime())
-            && doctorTimeBlockRequestDTO.getEndTime().isAfter(appointment.getStartTime())){
+            && doctorTimeBlockRequestDTO.getEndTime().isAfter(appointment.getStartTime())
+            && appointment.getStatus().equals(AppointmentsStatus.SCHEDULED)){
                 throw new ConflictWithSchedulesException();
             }
         }

@@ -1,14 +1,12 @@
-package br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments;
+package br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.useCases;
 
 import br.com.weldyscarmo.agendamento_consultas_medicas.enums.AppointmentsStatus;
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.*;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsEntity;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.AppointmentsResponseDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.dtos.CreateAppointmentsRequestDTO;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.useCases.CreateAppointmentsUseCase;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorEntity;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorRepository;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleEntity;
-import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.DoctorScheduleRepository;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.doctor.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,6 +24,7 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +42,9 @@ public class CreateAppointmentsUseCaseTest {
     @Mock
     private DoctorScheduleRepository doctorScheduleRepository;
 
+    @Mock
+    private DoctorTimeBlockRepository doctorTimeBlockRepository;
+
     UUID patientId;
 
     @BeforeEach
@@ -58,6 +60,7 @@ public class CreateAppointmentsUseCaseTest {
         LocalTime endTime;
         List<DoctorScheduleEntity> schedules;
         List<AppointmentsEntity> appointments;
+        List<DoctorTimeBlockEntity> timesBlock;
 
         @BeforeEach
         void setup(){
@@ -76,6 +79,8 @@ public class CreateAppointmentsUseCaseTest {
             schedules = builderAllDoctorSchedule(doctorEntity);
 
             appointments = builderAllDoctorAppointments(doctorEntity, appointmentsRequestDTO);
+
+            timesBlock = builderAllDoctorTimeBlock(doctorEntity, appointmentsRequestDTO);
         }
 
         @Nested
@@ -100,12 +105,16 @@ public class CreateAppointmentsUseCaseTest {
                 when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
                         .thenReturn(schedules);
 
+                when(doctorTimeBlockRepository.findAllByDoctorIdAndDate(doctorEntity.getId(),
+                        appointmentsRequestDTO.getDate())).thenReturn(timesBlock);
+
                 when(appointmentsRepository.save(any(AppointmentsEntity.class)))
                         .thenReturn(appointmentsEntity);
 
                 AppointmentsResponseDTO result = createAppointmentsUseCase.execute
                         (patientId, doctorEntity.getId(), appointmentsRequestDTO);
 
+                verify(appointmentsRepository).save(any(AppointmentsEntity.class));
                 assertThat(result.getPatientId()).isEqualTo(patientId);
                 assertThat(result.getDoctorId()).isEqualTo(doctorEntity.getId());
                 assertThat(result.getDate()).isEqualTo(appointmentsRequestDTO.getDate());
@@ -159,7 +168,6 @@ public class CreateAppointmentsUseCaseTest {
                 }
 
                 @Test
-
                 public void shouldNotCreateAppointmentWhenDoctorIsNotAvailableAtThatTime(){
 
                     appointmentsRequestDTO.setStartTime(LocalTime.of(7, 0));
@@ -171,6 +179,25 @@ public class CreateAppointmentsUseCaseTest {
                         createAppointmentsUseCase.execute(patientId, doctorEntity.getId(),
                                 appointmentsRequestDTO);
                     }).isInstanceOf(InvalidAppointmentHourException.class);
+                }
+
+                @Test
+                public void shouldNotCreateAppointmentWhenDoctorHasBlockedTime(){
+
+                    appointmentsRequestDTO.setStartTime(LocalTime.of(15, 0));
+
+                    when(doctorScheduleRepository.findAllByDoctorId(doctorEntity.getId()))
+                            .thenReturn(schedules);
+
+                    when(appointmentsRepository.findAllByDoctorIdAndDate(doctorEntity.getId(),
+                            appointmentsRequestDTO.getDate())).thenReturn(appointments);
+
+                    when(doctorTimeBlockRepository.findAllByDoctorIdAndDate
+                            (doctorEntity.getId(), appointmentsRequestDTO.getDate())).thenReturn(timesBlock);
+
+                    assertThatThrownBy(() -> {
+                        createAppointmentsUseCase.execute(patientId, doctorEntity.getId(), appointmentsRequestDTO);
+                    }).isInstanceOf(UnavailableScheduleException.class);
                 }
             }
         }
@@ -216,6 +243,16 @@ public class CreateAppointmentsUseCaseTest {
                 .startTime(LocalTime.of(10, 0))
                 .endTime(LocalTime.of(11, 0))
                 .status(AppointmentsStatus.SCHEDULED)
+                .build());
+    }
+
+    private List<DoctorTimeBlockEntity> builderAllDoctorTimeBlock
+            (DoctorEntity doctorEntity, CreateAppointmentsRequestDTO createAppointmentsRequestDTO){
+        return List.of(DoctorTimeBlockEntity.builder()
+                .doctorId(doctorEntity.getId())
+                .date(createAppointmentsRequestDTO.getDate())
+                .startTime(LocalTime.of(15, 0))
+                .endTime(LocalTime.of(17, 0))
                 .build());
     }
 }
