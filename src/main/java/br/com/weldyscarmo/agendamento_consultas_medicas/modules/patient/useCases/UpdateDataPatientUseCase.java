@@ -5,6 +5,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientE
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.PatientResponseDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.UpdateDataPatientRequestDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.utils.MapperPatientResponseDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,12 +34,6 @@ public class UpdateDataPatientUseCase {
             patientEntity.setUsername(updateDataPatientRequestDTO.getUsername());
         }
 
-        return PatientResponseDTO.builder()
-                .id(patientEntity.getId())
-                .name(patientEntity.getName())
-                .username(patientEntity.getUsername())
-                .email(patientEntity.getEmail())
-                .createdAt(patientEntity.getCreatedAt())
-                .build();
+        return MapperPatientResponseDTO.mapperPatientResponse(patientEntity);
     }
 }

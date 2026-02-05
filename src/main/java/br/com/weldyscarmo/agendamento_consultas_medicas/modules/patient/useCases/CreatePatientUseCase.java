@@ -6,6 +6,7 @@ import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientE
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.PatientRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.CreatePatientRequestDTO;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.dtos.PatientResponseDTO;
+import br.com.weldyscarmo.agendamento_consultas_medicas.modules.patient.utils.MapperPatientResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,12 +45,6 @@ public class CreatePatientUseCase {
 
         PatientEntity savedPatient = this.patientRepository.save(patientEntity);
 
-        return PatientResponseDTO.builder()
-                .id(savedPatient.getId())
-                .name(savedPatient.getName())
-                .username(savedPatient.getUsername())
-                .email(savedPatient.getEmail())
-                .createdAt(savedPatient.getCreatedAt())
-                .build();
+        return MapperPatientResponseDTO.mapperPatientResponse(savedPatient);
     }
 }
