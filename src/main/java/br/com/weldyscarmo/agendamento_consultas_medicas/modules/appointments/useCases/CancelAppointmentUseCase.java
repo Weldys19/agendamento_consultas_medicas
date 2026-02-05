@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-public class CancelAppointment {
+public class CancelAppointmentUseCase {
 
     @Autowired
     private AppointmentsRepository appointmentsRepository;
@@ -38,9 +38,6 @@ public class CancelAppointment {
         }
 
         LocalDateTime dateConsultation = LocalDateTime.of(appointment.getDate(), appointment.getStartTime());
-
-        System.out.println(dateConsultation.minusHours(2));
-        System.out.println(LocalDateTime.now());
 
         if (LocalDateTime.now().isAfter(dateConsultation.minusHours(2))) {
             throw new InvalidCancellationException();

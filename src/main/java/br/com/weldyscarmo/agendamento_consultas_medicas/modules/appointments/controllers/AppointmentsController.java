@@ -40,7 +40,7 @@ public class AppointmentsController {
     private SetStatusToFinishedUseCase setStatusToFinishedUseCase;
 
     @Autowired
-    private CancelAppointment cancelAppointment;
+    private CancelAppointmentUseCase cancelAppointmentUseCase;
 
     @Operation(summary = "Agendar consultas",
             description = "Essa função é responsável por agendar novas consultas")
@@ -108,7 +108,7 @@ public class AppointmentsController {
         List<GrantedAuthority> roles = List.copyOf(authorities);
         String role = roles.getFirst().getAuthority();
 
-        AppointmentsResponseDTO result = this.cancelAppointment.execute(role, userId, id);
+        AppointmentsResponseDTO result = this.cancelAppointmentUseCase.execute(role, userId, id);
         return ResponseEntity.ok(result);
     }
 }
