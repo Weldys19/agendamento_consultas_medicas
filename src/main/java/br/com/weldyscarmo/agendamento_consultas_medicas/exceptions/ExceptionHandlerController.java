@@ -107,4 +107,9 @@ public class ExceptionHandlerController {
     public ResponseEntity<String> handlerTimeSlotUnavailableForBlockingException(TimeSlotUnavailableForBlockingException e){
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(InvalidRoleException.class)
+    public ResponseEntity<String> handlerInvalidRoleException(InvalidRoleException e){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
 }

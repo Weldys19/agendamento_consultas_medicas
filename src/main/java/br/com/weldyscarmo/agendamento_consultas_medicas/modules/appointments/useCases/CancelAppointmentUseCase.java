@@ -3,6 +3,7 @@ package br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.us
 import br.com.weldyscarmo.agendamento_consultas_medicas.enums.AppointmentsStatus;
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.AppointmentNotFoundException;
 import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.InvalidCancellationException;
+import br.com.weldyscarmo.agendamento_consultas_medicas.exceptions.InvalidRoleException;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsEntity;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.AppointmentsRepository;
 import br.com.weldyscarmo.agendamento_consultas_medicas.modules.appointments.MapperAppointmentResponseDTO;
@@ -53,6 +54,9 @@ public class CancelAppointmentUseCase {
                     });
         }
 
+        if (appointment == null){
+            throw new InvalidRoleException();
+        }
         return appointment;
     }
 }
