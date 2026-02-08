@@ -55,26 +55,6 @@ public class BlockTimeUseCase {
         return builderDoctorTimeBlockResponse(saved);
     }
 
-    private DoctorTimeBlockEntity builderDoctorTimeBlockEntity(UUID doctorId,
-                                                         DoctorTimeBlockRequestDTO doctorTimeBlockRequestDTO){
-        return DoctorTimeBlockEntity.builder()
-                .doctorId(doctorId)
-                .date(doctorTimeBlockRequestDTO.getDate())
-                .startTime(doctorTimeBlockRequestDTO.getStartTime())
-                .endTime(doctorTimeBlockRequestDTO.getEndTime())
-                .build();
-    }
-
-    private DoctorTimeBlockResponseDTO builderDoctorTimeBlockResponse(DoctorTimeBlockEntity doctorTimeBlockEntity){
-        return DoctorTimeBlockResponseDTO.builder()
-                .id(doctorTimeBlockEntity.getId())
-                .doctorId(doctorTimeBlockEntity.getDoctorId())
-                .date(doctorTimeBlockEntity.getDate())
-                .startTime(doctorTimeBlockEntity.getStartTime())
-                .endTime(doctorTimeBlockEntity.getEndTime())
-                .build();
-    }
-
     private void checkIfTheBreakIsWithinTheWorkingHours(UUID doctorId,
                                                            DoctorTimeBlockRequestDTO doctorTimeBlockRequestDTO){
         List<DoctorScheduleEntity> schedules = this.doctorScheduleRepository
@@ -118,5 +98,25 @@ public class BlockTimeUseCase {
                 throw new OverlappingSchedulesException();
             }
         }
+    }
+
+    private DoctorTimeBlockEntity builderDoctorTimeBlockEntity(UUID doctorId,
+                                                               DoctorTimeBlockRequestDTO doctorTimeBlockRequestDTO){
+        return DoctorTimeBlockEntity.builder()
+                .doctorId(doctorId)
+                .date(doctorTimeBlockRequestDTO.getDate())
+                .startTime(doctorTimeBlockRequestDTO.getStartTime())
+                .endTime(doctorTimeBlockRequestDTO.getEndTime())
+                .build();
+    }
+
+    private DoctorTimeBlockResponseDTO builderDoctorTimeBlockResponse(DoctorTimeBlockEntity doctorTimeBlockEntity){
+        return DoctorTimeBlockResponseDTO.builder()
+                .id(doctorTimeBlockEntity.getId())
+                .doctorId(doctorTimeBlockEntity.getDoctorId())
+                .date(doctorTimeBlockEntity.getDate())
+                .startTime(doctorTimeBlockEntity.getStartTime())
+                .endTime(doctorTimeBlockEntity.getEndTime())
+                .build();
     }
 }

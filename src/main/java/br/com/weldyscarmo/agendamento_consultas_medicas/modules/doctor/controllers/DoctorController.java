@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -57,6 +58,7 @@ public class DoctorController {
     })
     @PatchMapping("/me")
     @PreAuthorize("hasRole('DOCTOR')")
+    @SecurityRequirement(name = "jwt_auth")
     public ResponseEntity<DoctorResponseDTO> update(@RequestBody UpdateDataDoctorRequestDTO updateDataDoctorRequestDTO,
                                                     HttpServletRequest request){
         UUID doctorId = UUID.fromString(request.getAttribute("user_id").toString());
